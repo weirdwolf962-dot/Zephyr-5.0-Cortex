@@ -1,0 +1,13 @@
+export enum Role {
+  USER = 'user',
+  MODEL = 'model',
+}
+
+export interface Message {
+  role: Role;
+  text: string;
+  sources?: { title: string; uri: string }[];
+  image?: string;
+  agentName?: string;
+  type?: 'text' | 'image';
+}
