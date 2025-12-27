@@ -115,7 +115,7 @@ if (typeof window !== 'undefined' && typeof marked !== 'undefined') {
 // --- Icons ---
 const Icons = {
   Send: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
-  Mic: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>,
+  Mic: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="19" x2="16" y2="19"></line></svg>, // Fixed potential misalignment in previous Icon.Mic
   MicActive: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"></path></svg>,
   Paperclip: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>,
   X: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
@@ -148,9 +148,9 @@ const LoadingScreen = () => (
     <div className="loading-container z-10 flex flex-col items-center gap-3 animate-fade-in">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
@@ -303,13 +303,13 @@ const ChatMessage = React.memo(({ msg, onSetAudioBuffer }: { msg: AppMessage; on
 
   return (
     <div className={`flex w-full ${msg.role === Role.USER ? 'justify-end' : 'justify-start'} group animate-fade-in`}>
-      <div className={`flex gap-3 max-w-[85%] sm:max-w-[75%] ${msg.role === Role.USER ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex gap-3 max-w-[90%] sm:max-w-[90%] ${msg.role === Role.USER ? 'flex-row-reverse' : 'flex-row'}`}>
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow transition-transform duration-300 group-hover:scale-105 ${msg.role === Role.USER ? 'bg-blue-600 text-white' : 'bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-purple-600 dark:text-purple-400'}`}>
           {msg.role === Role.USER ? <Icons.User /> : <Icons.Bot />}
         </div>
-        <div className={`flex flex-col ${msg.role === Role.USER ? 'items-end' : 'items-start'}`}>
+        <div className={`flex flex-col flex-1 ${msg.role === Role.USER ? 'items-end' : 'items-start'}`}>
           {msg.role === Role.MODEL && msg.agentName && <AgentBadge name={msg.agentName} />}
-          <div className={`rounded-2xl px-5 py-4 shadow-lg shadow-zinc-200/30 dark:shadow-none transition-all duration-300 ${msg.role === Role.USER ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/40 dark:border-zinc-800/40 rounded-tl-none backdrop-blur-md'}`}>
+          <div className={`w-full rounded-2xl px-5 py-4 shadow-lg shadow-zinc-200/30 dark:shadow-none transition-all duration-300 ${msg.role === Role.USER ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/40 dark:border-zinc-800/40 rounded-tl-none backdrop-blur-md'}`}>
             {msg.image && (
               <div className="relative group/img mb-3 rounded-xl overflow-hidden border border-white/20">
                 <img src={msg.image} alt="Upload" className="max-w-full h-auto" />
@@ -331,7 +331,7 @@ const ChatMessage = React.memo(({ msg, onSetAudioBuffer }: { msg: AppMessage; on
                 </div>
               </div>
             ) : (
-              <div className={`prose prose-sm leading-relaxed break-words ${msg.role === Role.USER ? 'prose-invert text-white' : 'dark:prose-invert text-zinc-800 dark:text-zinc-200'}`} dangerouslySetInnerHTML={renderedText} />
+              <div className={`prose prose-sm max-w-none leading-relaxed break-words ${msg.role === Role.USER ? 'prose-invert text-white' : 'dark:prose-invert text-zinc-800 dark:text-zinc-200'}`} dangerouslySetInnerHTML={renderedText} />
             )}
           </div>
           <div className={`flex flex-col gap-2 mt-2 ${msg.role === Role.USER ? 'items-end text-right' : 'items-start text-left'} w-full`}>
@@ -762,7 +762,7 @@ const App = () => {
         const ai = new GoogleGenAI({ apiKey });
         const finalSystemInstruction = selectedAgent 
             ? `${selectedAgent.instructions}\n\nCURRENT AGENT MODE: ${agentName}\nROLE: ${selectedAgent.role}\nDESCRIPTION: ${selectedAgent.description}`
-            : "You are Zephyr, a helpful AI assistant 🤖. Respond clearly using Markdown. You were built by Rayyan. Use relevant emojis to make your response more expressive and engaging! 🚀✨";
+            : "You are Zephyr, a helpful AI assistant 🤖. Respond clearly using Markdown. You were built by Quantum Coders. Use relevant emojis to make your response more expressive and engaging! 🚀✨";
 
         const historyForAPI = messages.filter(m => !m.isLoading).map(msg => ({ role: msg.role, parts: [{ text: msg.text }] }));
         const currentParts: any[] = [];
@@ -882,7 +882,7 @@ const App = () => {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-8 scroll-smooth">
-        <div className="max-w-4xl mx-auto space-y-8 pb-4">
+        <div className="max-w-6xl mx-auto space-y-8 pb-4">
           {messages.length === 0 ? (
              <div className="relative flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(59,130,246,0.1)_0%,transparent_70%)] pointer-events-none -z-10 blur-3xl"></div>
@@ -894,7 +894,7 @@ const App = () => {
                 </div>
                 <h2 className="text-3xl font-black mb-3 text-center tracking-tight text-zinc-800 dark:text-zinc-100">How can I help you today?</h2>
                 <p className="text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-10 max-w-sm">{helperText}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl px-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-4xl px-2">
                     <SuggestionCard icon={Icons.Map} text="Discover Places" subtext="Locate best coffee shops and co-working spaces nearby." onClick={() => sendMessage("Find top-rated co-working spaces with high speed wifi nearby")} />
                     <SuggestionCard icon={Icons.Newspaper} text="Live Insights" subtext="Current events, breaking news, and trending global updates." onClick={() => sendMessage("Summarize the most significant news headlines from the last 24 hours")} />
                     <SuggestionCard icon={Icons.Terminal} text="Software Architect" subtext="Code generation, system design, and debugging expertise." onClick={() => sendMessage("Write a robust React hook for managing global state using Context and useReducer")} />
@@ -917,7 +917,7 @@ const App = () => {
       </main>
 
       <div className="p-4 sm:p-6 shrink-0 bg-transparent relative z-40">
-        <div className="max-w-3xl mx-auto relative">
+        <div className="max-w-5xl mx-auto relative">
           {attachment && (
             <div className="absolute bottom-full mb-5 left-4 inline-flex items-center gap-2.5 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl px-3 py-2 rounded-2xl text-xs border border-zinc-200 dark:border-zinc-800 shadow-xl animate-fade-in z-50">
                 <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden shadow-sm border border-black/5"><img src={attachment.url} alt="preview" className="w-full h-full object-cover" /></div>
