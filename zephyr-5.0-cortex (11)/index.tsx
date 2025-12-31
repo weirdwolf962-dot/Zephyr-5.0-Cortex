@@ -968,47 +968,88 @@ const App = () => {
               <input type="file" accept="image/*" onChange={handleFileSelect} ref={fileInputRef} className="hidden" />
               <button type="button" disabled={isProcessing} onClick={() => fileInputRef.current?.click()} className="p-2 sm:p-2.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed" title="Attach visual data"><Icons.Paperclip /></button>
               
-              <input 
-                  type="text" 
-                  value={input} 
-                  onChange={(e) => setInput(e.target.value)} 
-                  placeholder={isProcessing ? "Processing response..." : "Message Zephyr..."}
-                  disabled={isProcessing}
-                  className="flex-1 bg-transparent text-zinc-900 dark:text-zinc-100 py-2 px-1 focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-700 text-sm font-bold tracking-tight disabled:cursor-not-allowed" 
-              />
-              
-              <div className="flex items-center gap-1.5">
-                  <button 
-                    type="button" 
-                    onClick={() => setIsDeepSearch(!isDeepSearch)} 
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${isDeepSearch ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'}`}
-                    title="Toggle Gemini 2.5 Pro reasoning"
-                  >
-                    <Icons.Sparkles /> Pro
-                  </button>
-                  {input.trim() || attachment ? (
-                      <button type="submit" disabled={isProcessing} className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:scale-[0.95] transition-all shadow-md shadow-blue-500/20 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-none">
-                          {isProcessing ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Icons.Send />}
-                      </button>
-                  ) : (
-                      <button type="button" onClick={handleMicClick} disabled={isProcessing} className={`p-3 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/40' : 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
-                          {isRecording ? <Icons.MicActive /> : <Icons.Mic />}
-                      </button>
-                  )}
-              </div>
-            </div>
-          </form>
-          
-           <div className="mt-4 px-4 text-center text-[11px] font-medium text-blue-400 opacity-80 
-                drop-shadow-[0_0_6px_rgba(59,130,246,0.6)]
-                hover:opacity-100 transition-opacity">
-                Zephyr can make mistakes. Check important information.
-           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+              <form
+  onSubmit={handleSubmit}
+  className="relative flex items-center gap-2 px-3 py-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+>
+  {/* TEXT INPUT */}
+  <input
+    type="text"
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    placeholder={isProcessing ? "Processing response..." : "Message Zephyr..."}
+    disabled={isProcessing}
+    autoComplete="off"
+    autoCorrect="off"
+    spellCheck={false}
+    className="flex-1 bg-transparent text-zinc-900 dark:text-zinc-100 py-2 px-1
+               focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-700
+               text-sm font-bold tracking-tight disabled:cursor-not-allowed"
+  />
+
+  {/* ACTION BUTTONS */}
+  <div className="flex items-center gap-1.5">
+
+    {/* PRO TOGGLE */}
+    <button
+      type="button"
+      onClick={() => setIsDeepSearch(!isDeepSearch)}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
+        text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border
+        ${isDeepSearch
+          ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]'
+          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'
+        }`}
+      title="Toggle Gemini 2.5 Pro reasoning"
+    >
+      <Icons.Search />
+      Pro
+    </button>
+
+    {/* MIC BUTTON (ALWAYS VISIBLE) */}
+    <button
+      type="button"
+      onClick={handleMicClick}
+      disabled={isProcessing}
+      className={`p-3 rounded-xl transition-all active:scale-[0.85]
+        disabled:opacity-30 disabled:cursor-not-allowed
+        ${isRecording
+          ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/40'
+          : 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+        }`}
+      title="Voice input"
+    >
+      {isRecording ? <Icons.MicActive /> : <Icons.Mic />}
+    </button>
+
+    {/* SEND BUTTON */}
+    <button
+      type="submit"
+      disabled={isProcessing || !input.trim()}
+      className="p-3 bg-blue-600 text-white rounded-xl
+                 hover:bg-blue-700 active:scale-[0.95] transition-all
+                 shadow-md shadow-blue-500/20
+                 disabled:bg-zinc-300 dark:disabled:bg-zinc-800
+                 disabled:text-zinc-500 disabled:shadow-none
+                 disabled:scale-100 disabled:cursor-not-allowed"
+      title="Send message"
+    >
+      {isProcessing ? (
+        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      ) : (
+        <Icons.Send />
+      )}
+    </button>
+
+  </div>
+</form>
+
+{/* DISCLAIMER */}
+<div className="mt-4 px-4 text-center text-[11px] font-medium text-blue-400 opacity-80
+     drop-shadow-[0_0_6px_rgba(59,130,246,0.6)]
+     hover:opacity-100 transition-opacity">
+  Zephyr can make mistakes. Check important information.
+</div>
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
