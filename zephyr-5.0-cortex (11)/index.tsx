@@ -115,6 +115,7 @@ if (typeof window !== 'undefined' && typeof marked !== 'undefined') {
 // --- Icons ---
 const Icons = {
   Send: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
+  Deep: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><path d="M15 2l.5 1.5L17 4l-1.5.5L15 6l-.5-1.5L13 4l1.5-.5L15 2z"></path><path d="M19 8l.4 1.2L21 10l-1.6.4L19 12l-.4-1.6L17 10l1.6-.8L19 8z"></path></svg>,
   Mic: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="19" x2="16" y2="19"></line></svg>,
   MicActive: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"></path></svg>,
   Paperclip: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>,
@@ -224,7 +225,6 @@ const SpeakerButton = ({ text, audioBuffer, onBufferReady }: { text: string, aud
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
       const response = await ai.models.generateContent({
-        // Updated to use the requested 2.5 series model for TTS
         model: "gemini-2.5-pro-preview-tts",
         contents: [{ parts: [{ text }] }],
         config: {
@@ -964,38 +964,34 @@ const App = () => {
           )}
           
           <form onSubmit={(e) => { e.preventDefault(); sendMessage(input, attachment || undefined); }} className="relative flex flex-col gap-2">
-            <div className="flex items-center gap-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-2 sm:p-2.5 shadow-xl focus-within:ring-2 focus-within:ring-blue-500/10 transition-all backdrop-blur-3xl group/input border-white/40 dark:border-white/5 max-w-2xl mx-auto w-full">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-1.5 sm:p-2.5 shadow-xl focus-within:ring-2 focus-within:ring-blue-500/10 transition-all backdrop-blur-3xl group/input border-white/40 dark:border-white/5">
               <input type="file" accept="image/*" onChange={handleFileSelect} ref={fileInputRef} className="hidden" />
-              <button type="button" disabled={isProcessing} onClick={() => fileInputRef.current?.click()} className="p-2 sm:p-2.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed" title="Attach visual data"><Icons.Paperclip /></button>
+              <button type="button" disabled={isProcessing} onClick={() => fileInputRef.current?.click()} className="p-2 sm:p-2.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed shrink-0" title="Attach visual data"><Icons.Paperclip /></button>
+              
               <input 
                   type="text" 
                   value={input} 
                   onChange={(e) => setInput(e.target.value)} 
-                  placeholder={isProcessing ? "Processing response..." : "Message Zephyr..."}
+                  placeholder={isProcessing ? "Processing..." : "Message Zephyr..."}
                   disabled={isProcessing}
-                  className="flex-1 bg-transparent text-zinc-900 dark:text-zinc-100 py-2 px-1 focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-700 text-sm font-bold tracking-tight disabled:cursor-not-allowed" 
+                  className="flex-1 min-w-0 bg-transparent text-zinc-900 dark:text-zinc-100 py-2 px-1 focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-700 text-sm font-bold tracking-tight disabled:cursor-not-allowed" 
               />
               
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   <button 
-                      type="button" 
-                      onClick={() => setIsDeepSearch(!isDeepSearch)} 
-                      className={`-ml-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${
-                  isDeepSearch
-                          ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'
-                        }`}
-                      title="Toggle Gemini 2.5 Pro reasoning"
-                    >
-                  <Icons.Search /> Pro
-                 </button>
-
+                    type="button" 
+                    onClick={() => setIsDeepSearch(!isDeepSearch)} 
+                    className={`flex items-center justify-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border shrink-0 ${isDeepSearch ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'}`}
+                    title="Toggle Gemini 2.5 Pro reasoning"
+                  >
+                    <Icons.Deep /> <span className="hidden sm:inline">Pro</span>
+                  </button>
                   {input.trim() || attachment ? (
-                      <button type="submit" disabled={isProcessing} className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:scale-[0.95] transition-all shadow-md shadow-blue-500/20 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-none">
+                      <button type="submit" disabled={isProcessing} className="p-2.5 sm:p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:scale-[0.95] transition-all shadow-md shadow-blue-500/20 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-none shrink-0">
                           {isProcessing ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Icons.Send />}
                       </button>
                   ) : (
-                      <button type="button" onClick={handleMicClick} disabled={isProcessing} className={`p-3 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/40' : 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
+                      <button type="button" onClick={handleMicClick} disabled={isProcessing} className={`p-2.5 sm:p-3 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/40' : 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}>
                           {isRecording ? <Icons.MicActive /> : <Icons.Mic />}
                       </button>
                   )}
@@ -1013,6 +1009,7 @@ const App = () => {
     </div>
   );
 };
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
     const root = ReactDOM.createRoot(rootElement);
