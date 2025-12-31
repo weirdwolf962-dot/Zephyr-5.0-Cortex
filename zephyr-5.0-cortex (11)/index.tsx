@@ -225,7 +225,7 @@ const SpeakerButton = ({ text, audioBuffer, onBufferReady }: { text: string, aud
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
       const response = await ai.models.generateContent({
         // Updated to use the requested 2.5 series model for TTS
-        model: "gemini-2.5-flash-preview-tts",
+        model: "gemini-2.5-pro-preview-tts",
         contents: [{ parts: [{ text }] }],
         config: {
           responseModalities: [Modality.AUDIO],
@@ -978,13 +978,18 @@ const App = () => {
               
               <div className="flex items-center gap-1.5">
                   <button 
-                    type="button" 
-                    onClick={() => setIsDeepSearch(!isDeepSearch)} 
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${isDeepSearch ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'}`}
-                    title="Toggle Gemini 2.5 Pro reasoning"
-                  >
-                    <Icons.Search /> Pro
-                  </button>
+                      type="button" 
+                      onClick={() => setIsDeepSearch(!isDeepSearch)} 
+                      className={`-ml-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 border ${
+                  isDeepSearch
+                          ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.4)]'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-transparent'
+                        }`}
+                      title="Toggle Gemini 2.5 Pro reasoning"
+                    >
+                  <Icons.Search /> Pro
+                 </button>
+
                   {input.trim() || attachment ? (
                       <button type="submit" disabled={isProcessing} className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:scale-[0.95] transition-all shadow-md shadow-blue-500/20 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-none">
                           {isProcessing ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Icons.Send />}
