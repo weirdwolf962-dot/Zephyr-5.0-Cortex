@@ -964,7 +964,7 @@ const App = () => {
           )}
           
           <form onSubmit={(e) => { e.preventDefault(); sendMessage(input, attachment || undefined); }} className="relative flex flex-col gap-2">
-            <div className="flex items-center gap-2bg-white/95 dark:bg-zinc-900/95border border-zinc-200 dark:border-zinc-800rounded-2xl p-2 sm:p-2.5shadow-xlfocus-within:ring-2 focus-within:ring-blue-500/10transition-allbackdrop-blur-3xlgroup/inputborder-white/40 dark:border-white/5max-w-3xl mx-auto w-full">
+            <div className="flex items-center gap-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-2 sm:p-2.5 shadow-xl focus-within:ring-2 focus-within:ring-blue-500/10 transition-all backdrop-blur-3xl group/input border-white/40 dark:border-white/5 max-w-2xl mx-auto w-full">
               <input type="file" accept="image/*" onChange={handleFileSelect} ref={fileInputRef} className="hidden" />
               <button type="button" disabled={isProcessing} onClick={() => fileInputRef.current?.click()} className="p-2 sm:p-2.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all active:scale-[0.85] disabled:opacity-30 disabled:cursor-not-allowed" title="Attach visual data"><Icons.Paperclip /></button>
               <input 
