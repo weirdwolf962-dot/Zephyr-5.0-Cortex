@@ -45,9 +45,10 @@ export const agents: Agent[] = [
 ];
 
 /**
- * Enhanced Agent Selector using Gemini 2.5 Flash for semantic intent classification as per the chart.
+ * Enhanced Agent Selector using Gemini 2.5 Flash for semantic intent classification.
+ * Now supports multimodal input (text + image) to decide the best agent.
  */
-export async function selectAgent(userMessage: string): Promise<Agent | undefined> {
+export async function selectAgent(userMessage: string, image?: { data: string; mimeType: string }): Promise<Agent | undefined> {
   const lowerMsg = userMessage.toLowerCase().trim();
 
   // Instant trigger for explicit image requests
@@ -61,24 +62,33 @@ export async function selectAgent(userMessage: string): Promise<Agent | undefine
     
     const classificationPrompt = `
       You are an intent classifier for a multi-agent system.
+      Analyze the provided message and optional image to categorize it into exactly one class: [News, Science, Coder, Creative, General].
       
-      Categorize the following message into exactly one class: [News, Science, Coder, Creative, General].
-      
-      - News: Global events, current facts, politics, trends.
-      - Science: Math problems, physics/chem theories, academic research.
-      - Coder: Programming code, debugging, tech architecture, terminal commands.
-      - Creative: Stories, poems, lyrics, roleplay, or Hindi/Urdu content.
+      - News: Global events, current facts, politics, trends, or screenshots of news articles.
+      - Science: Math problems (text or photo), physics/chem theories, academic research, or graphs.
+      - Coder: Programming code, debugging, tech architecture, terminal commands, or screenshots of IDEs/errors.
+      - Creative: Stories, poems, lyrics, roleplay, Hindi/Urdu content, or creative image interpretation.
       - General: Greetings, generic help, or conversation without specific domain needs.
       
-      Message: "${userMessage}"
+      Message: "${userMessage || "[No text provided]"}"
       
       Response format: Just the category name.
     `;
 
-    // Classification uses Gemini 2.5 Flash as requested
+    const parts: any[] = [{ text: classificationPrompt }];
+    if (image) {
+      parts.push({ 
+        inlineData: { 
+          data: image.data, 
+          mimeType: image.mimeType 
+        } 
+      });
+    }
+
+    // Classification uses Gemini 2.5 Flash for multimodal reasoning
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: classificationPrompt,
+      contents: { parts },
     });
 
     const category = response.text?.trim().split(/[^a-zA-Z]/)[0] || "General";
@@ -95,7 +105,7 @@ export async function selectAgent(userMessage: string): Promise<Agent | undefine
     return agents.find(a => a.name === agentMap[category]);
     
   } catch (error) {
-    console.warn("Classification failed, using fallback regex.", error);
+    console.warn("Multimodal classification failed, using fallback regex.", error);
     if (/\b(news|latest|happened|event|world|politics|president|war|economy|stock|price|headline)\b/i.test(lowerMsg)) return agents.find(a => a.name === "News Agent");
     if (/\b(solve|calculate|math|physics|equation|formula|scientific|chemistry|biology|science|numerical|integral|derivative|calculus)\b/i.test(lowerMsg)) return agents.find(a => a.name === "Science Agent");
     if (/\b(code|debug|script|function|react|python|api|error|bug|programming|develop|software|java|rust|html|css|json|yaml|sql|node)\b/i.test(lowerMsg)) return agents.find(a => a.name === "Coder Agent");
